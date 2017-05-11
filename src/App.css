@@ -1,0 +1,61 @@
+.app{
+  margin: auto;
+  width: 550px;
+  min-width: 550px;
+}
+
+.board{
+  width:  540px;
+  height: 540px;
+  border: solid 2px #000;
+  margin: auto;
+}
+
+.board-row{
+  height: 60px;
+}
+
+.square{
+  position: relative;
+  width: 60px;
+  height: 60px;
+  display: inline-block;
+  border: solid 1px #aaa;
+  box-sizing: border-box;
+}
+
+.info-panel{
+  margin: 10px 0 10px 10px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.status-panel{
+  margin: 10px 3px 10px 10px;
+  font-size: 28px;
+}
+
+.score{
+  float: left;
+}
+
+.score-value{
+  color: green;
+  font-weight: bold;
+}
+
+.next-square{
+  float: right;
+  position: relative;
+}
+
+.next-label{
+  margin-right: 10px;
+  position: absolute;
+  left: -65px;
+  top: 10px;
+}
+
+.clear{
+  clear: both;
+}
