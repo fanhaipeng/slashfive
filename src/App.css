@@ -59,3 +59,27 @@
 .clear{
   clear: both;
 }
+
+.type-1{
+  background-color: #F00;
+}
+
+.type-2{
+  background-color: #0F0;
+}
+
+.type-3{
+  background-color: #00F;
+}
+
+.type-4{
+  background-color: #FF0;
+}
+
+.type-5{
+  background-color: #F0F;
+}
+
+.type-6{
+  background-color: #0FF;
+}

@@ -4,49 +4,45 @@ import './App.css';
 var NODE_TYPES = 6
 var ROW_NUMBER = 9;
 var NEW_NODE_NUMBER = 3;
-class App extends Component {
+
+class App extends Component {    
   constructor() {
     super();
-    this.state = {
-      squares: [],
-      nextSquares: [],
+    this["initialState"] = {
+      squares: this.initSquares(),
+      nextSquares: this.getNextSquares(true),
       playing: false
     };
+
+    this.state = this.initialState;
   }
 
   startGame() {
-    let initialSquares = this.setupSquares();
-    let initialNextSquares = this.getNextSquares();
-    this.setState({
-      squares: initialSquares,
-      nextSquares: initialNextSquares,
-      playing: true
-    });
+    this.setState(this.initialState);
   }
 
-  setupSquares() {
+  initSquares() {
     let squares = new Array(ROW_NUMBER * ROW_NUMBER);
     for (let i = 0; i < squares.length; i++) {
       squares[i] = {
-        x: i,
-        y: i % ROW_NUMBER,
+        x: i % ROW_NUMBER,
+        y: Math.floor(i / ROW_NUMBER),
         filled: false,
         type: null
       }
     }
-
-    this.addNewNodes(squares);
+    
     return squares;
   }
 
   addNewNodes(squares) {
-    let nextSquares = this.getNextSquares();
+    let nextSquares = this.getNextSquares(false);
     for (let i = 0; i < nextSquares.length; i++) {
       var nextNodeIndex = Math.floor(Math.random() * ROW_NUMBER * ROW_NUMBER);
       do {
         if (!squares[nextNodeIndex].filled) {
           squares[nextNodeIndex].filled = true;
-          squares[nextNodeIndex].type = nextSquares[i];
+          squares[nextNodeIndex].type = nextSquares[i].type;
           break;
         } else {
           nextNodeIndex++;
@@ -58,10 +54,13 @@ class App extends Component {
     }
   }
 
-  getNextSquares() {
+  getNextSquares(init) {
     let result = [];
     for (let i = 0; i < NEW_NODE_NUMBER; i++) {
-      result.push(Math.floor(Math.random() * NODE_TYPES + 1));
+      result.push({
+        filled: init ? false : true,
+        type: init ? null : Math.floor(Math.random() * NODE_TYPES + 1)
+      });
     }
     return result;
   }
@@ -69,9 +68,10 @@ class App extends Component {
   render() {
     return (
       <div className="app">
-        <InformationPanel startButtonText={this.state.playing ? "Restart Game" : "Start Game"} onStartButtonClick={() => this.startGame()} />
-        <Board />
-        <StatusPanel />
+        <InformationPanel startButtonText={this.state.playing ? "Restart Game" : "Start Game"} 
+                          onStartButtonClick={() => this.startGame()} />
+        <Board squares={this.state.squares}/>
+        <StatusPanel nextSquares={this.state.nextSquares}/>
       </div>
     );
   }
@@ -79,22 +79,48 @@ class App extends Component {
 
 class Square extends Component {
   render() {
-    return (
-      <div className="square" />
-    );
+    let classNames = ["square"];
+    if (!this.props.value){
+      console.log("fail");      
+    }
+
+    if (this.props.value.filled){
+      classNames.push("filled");
+    }
+
+    if (this.props.value.type){
+      classNames.push("type-" + this.props.value.type);
+    }
+
+    return <div className={classNames.join(' ')} />
   }
 }
 
 class Board extends Component {
+  renderSquares(){     
+    let rows = [];
+    let oneRow = [];
+    let rowKey = 0;
+    for (let i=0; i<this.props.squares.length; i++){      
+      let node = this.props.squares[i];
+      if (node.x === 0){
+        if (oneRow.length > 0){
+          rows.push(<div className="board-row" key={rowKey++}>{oneRow}</div>);
+          oneRow = [];          
+        }
+      }
+
+      oneRow.push(<Square value={node} key={node.x}/>)          
+    };
+
+    rows.push(<div className="board-row" key={rowKey}>{oneRow}</div>)
+    return rows;
+  }
+
   render() {
-    return (
-      <div className="board" >
-        {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((j) => {
-          let row = [0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => {
-            return <Square key={i} />;
-          });
-          return <div className="board-row" key={j}>{row}</div>;
-        })}
+    return (      
+      <div className="board">
+        {this.renderSquares()}
       </div>
     );
   }
@@ -107,8 +133,8 @@ class StatusPanel extends Component {
         <Score />
         <div className="next-square">
           <span className="next-label">Next</span>
-          {[0, 1, 2].map((i) => {
-            return <Square key={i} />;
+          {this.props.nextSquares.map((node, index) => {
+            return <Square key={index} value={node} />;
           })}
         </div>
         <div className="clear" />
@@ -133,7 +159,7 @@ class InformationPanel extends Component {
     return (
       <div className="info-panel">
         <span>Welcome!</span>
-        <button className="start-button" onClick={this.props.onStartButtonClick()}>{this.props.startButtonText}</button>
+        <button className="start-button" onClick={this.props.onStartButtonClick}>{this.props.startButtonText}</button>
       </div>);
   }
 }
