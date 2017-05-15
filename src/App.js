@@ -8,17 +8,23 @@ var NEW_NODE_NUMBER = 3;
 class App extends Component {    
   constructor() {
     super();
-    this["initialState"] = {
+
+    this.state = {
       squares: this.initSquares(),
       nextSquares: this.getNextSquares(true),
       playing: false
     };
-
-    this.state = this.initialState;
   }
 
   startGame() {
-    this.setState(this.initialState);
+    let squares = this.initSquares();
+    this.addNewNodes(squares);
+    let nextSquares = this.getNextSquares(false);
+    this.setState({
+      squares: squares,
+      nextSquares: nextSquares,
+      playing: true
+    });
   }
 
   initSquares() {
@@ -65,13 +71,47 @@ class App extends Component {
     return result;
   }
 
+  onSquareClicked(evt){
+
+  }
+
   render() {
     return (
       <div className="app">
         <InformationPanel startButtonText={this.state.playing ? "Restart Game" : "Start Game"} 
                           onStartButtonClick={() => this.startGame()} />
-        <Board squares={this.state.squares}/>
+        <Board squares={this.state.squares} onSquareClicked={(evt) => this.onSquareClicked(evt)}/>
         <StatusPanel nextSquares={this.state.nextSquares}/>
+      </div>
+    );
+  }
+}
+
+class Board extends Component {
+  renderSquares(){     
+    let rows = [];
+    let oneRow = [];
+    let rowKey = 0;
+    for (let i=0; i<this.props.squares.length; i++){      
+      let node = this.props.squares[i];
+      if (node.x === 0){
+        if (oneRow.length > 0){
+          rows.push(<div className="board-row" key={rowKey++}>{oneRow}</div>);
+          oneRow = [];          
+        }
+      }
+
+      oneRow.push(<Square value={node} key={node.x} onClick={(evt) => this.props.onSquareClicked(evt)}/>)          
+    };
+
+    rows.push(<div className="board-row" key={rowKey}>{oneRow}</div>)
+    return rows;
+  }
+
+  render() {
+    return (      
+      <div className="board">
+        {this.renderSquares()}
       </div>
     );
   }
@@ -93,36 +133,6 @@ class Square extends Component {
     }
 
     return <div className={classNames.join(' ')} />
-  }
-}
-
-class Board extends Component {
-  renderSquares(){     
-    let rows = [];
-    let oneRow = [];
-    let rowKey = 0;
-    for (let i=0; i<this.props.squares.length; i++){      
-      let node = this.props.squares[i];
-      if (node.x === 0){
-        if (oneRow.length > 0){
-          rows.push(<div className="board-row" key={rowKey++}>{oneRow}</div>);
-          oneRow = [];          
-        }
-      }
-
-      oneRow.push(<Square value={node} key={node.x}/>)          
-    };
-
-    rows.push(<div className="board-row" key={rowKey}>{oneRow}</div>)
-    return rows;
-  }
-
-  render() {
-    return (      
-      <div className="board">
-        {this.renderSquares()}
-      </div>
-    );
   }
 }
 
