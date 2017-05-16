@@ -169,7 +169,7 @@ class InformationPanel extends Component {
     return (
       <div className="info-panel">
         <span>Welcome!</span>
-        <button className="start-button" onClick={this.props.onStartButtonClick}>{this.props.startButtonText}</button>
+        <button className="start-button" onClick={() => this.props.onStartButtonClick()}>{this.props.startButtonText}</button>
       </div>);
   }
 }
